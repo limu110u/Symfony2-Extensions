@@ -1,0 +1,56 @@
+Symfony2を利用する上で、日本語環境における不具合の解消や機能拡張を行うためのパッケージです。
+現時点ではSwiftMailerによる日本語JISメール送信不具合を解消するクラスを提供します。
+
+ライセンス：MITライセンス
+但し、以下のブログ記事に掲載されているsymfony1.4向けのコードを一部引用しています。
+http://www.kuzilla.co.jp/article.php/20100301symfony
+ライセンスについての表記がなかったので、問題があればご連絡ください。
+
+利用条件：動作不具合等、作者及びコード引用元の作者は一切責任を負いません。
+
+動作環境：Symfony 2.0.0 Standard Edition
+
+
+１．vendor/limu110u/src/Limu110u/SwiftMailer
+
+SwiftMailerで日本語JISメールを送信できるようになります。
+
+
+(1) インストール
+インストールはvendor以下にファイルを配置、app/autoload.phpの
+$loader->registerNamespaces()のパラメータ末尾に
+'Firstmedia'=>__DIR__.'/../vendor/firstmedia/src'を追記します。
+
+app/autoload.php
+ 7 $loader->registerNamespaces(array(
+ 8     'Symfony'          => array(__DIR__.'/../vendor/symfony/src', __DIR__.'/../vendor/bundles'),
+ 9     'Sensio'           => __DIR__.'/../vendor/bundles',
+10     'JMS'              => __DIR__.'/../vendor/bundles',
+11     'Doctrine\\Common' => __DIR__.'/../vendor/doctrine-common/lib',
+12     'Doctrine\\DBAL'   => __DIR__.'/../vendor/doctrine-dbal/lib',
+13     'Doctrine'         => __DIR__.'/../vendor/doctrine/lib',
+14     'Monolog'          => __DIR__.'/../vendor/monolog/src',
+15     'Assetic'          => __DIR__.'/../vendor/assetic/src',
+16     'Metadata'         => __DIR__.'/../vendor/metadata/src',
+17     'Limu110u'         => __DIR__.'/../vendor/limu110u/src',
+18 ));
+
+app/config/parameters.iniでメール送信環境（mailer_接頭辞が付いている部分）を設定しておきます。
+（参考）http://symfony.com/doc/current/cookbook/email.html
+
+
+(2) メール送信
+送信機能を実装するControllerの先頭に次の行を追加して、名前空間をインポートします。
+
+use Limu110u\SwiftMailer\Localize\Japanese\Message;
+
+送信機能を実装するアクション内で以下の例に習ってコードを記述します。
+
+$message = Message::newInstance()
+  ->setSubject('メールの表題')
+  ->setFrom('送信元メールアドレス', '送信元の名前（オプション）')
+  ->setTo('送信先メールアドレス', '送信先の名前（オプション）')
+  ->setBody('メールの本文');
+$this->get('mailer')->send($message);
+
+
